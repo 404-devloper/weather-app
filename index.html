@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weather App</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #101215, #01929a);
+      color: #fff;
+      text-align: center;
+      padding: 50px 20px;
+    }
+
+    .weather-app {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 20px;
+      max-width: 400px;
+      margin: 0 auto;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
+
+    .weather-icon {
+      width: 100px;
+    }
+
+    .weather-info {
+      margin-top: 20px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      margin-bottom: 20px;
+      width: 80%;
+      max-width: 300px;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      background: #ffffff;
+      color: #333;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #05f7db;
+    }
+
+    .label {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>🌦️ Weather App</h1>
+  <input type="text" id="cityInput" placeholder="Enter city name" />
+  <button onclick="getWeather()">Get Weather</button>
+
+  <div class="weather-app" id="weatherBox" style="display:none;">
+    <h2 id="location"></h2>
+    <img id="icon" class="weather-icon" alt="Weather Icon"/>
+    <div class="weather-info">
+      <p><span class="label">Temperature:</span> <span id="temp"></span> °C</p>
+      <p><span class="label">Humidity:</span> <span id="humidity"></span>%</p>
+      <p><span class="label">Condition:</span> <span id="condition"></span></p>
+      <p><span class="label">Precipitation:</span> <span id="precip"></span> mm</p>
+      <p><span class="label">Air Quality Index:</span> <span id="aqi"></span></p>
+    </div>
+  </div>
+
+  <script>
+    async function getWeather() {
+      const city = document.getElementById('cityInput').value || "London";
+      const apiKey = '8b4d788f1bfb4e739af115421250310';
+      const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=yes`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Weather data not found");
+
+        const data = await response.json();
+
+        document.getElementById('location').textContent = `${data.location.name}, ${data.location.country}`;
+        document.getElementById('icon').src = `https:${data.current.condition.icon}`;
+        document.getElementById('temp').textContent = data.current.temp_c;
+        document.getElementById('humidity').textContent = data.current.humidity;
+        document.getElementById('condition').textContent = data.current.condition.text;
+        document.getElementById('precip').textContent = data.current.precip_mm;
+        document.getElementById('aqi').textContent = data.current.air_quality.pm2_5.toFixed(1);
+
+        document.getElementById('weatherBox').style.display = 'block';
+      } catch (error) {
+        alert("Error fetching weather data. Try another city.");
+        console.error(error);
+      }
+    }
+  </script>
+</body>
+</html>
